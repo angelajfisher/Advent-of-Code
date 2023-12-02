@@ -80,7 +80,10 @@ func digitCalibrationValues(lines []string) int {
 	sum := 0
 
 	for i := 0; i < len(lines); i++ {
-		nums := getAllNums(lines[i])
+		regex := regexp.MustCompile(
+			`\d{1}`,
+		)
+		nums := regex.FindAllString(lines[i], -1)
 
 		numStr := nums[0] + nums[len(nums)-1]
 		num, _ := strconv.Atoi(numStr)
