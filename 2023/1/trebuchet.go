@@ -8,15 +8,13 @@ import "strconv"
 import "strings"
 
 func main() {
-	lines, err := readLines()
-	if err != nil {
-		panic(fmt.Errorf("oops! %w", err))
-	}
+	lines, _ := readLines()
+
 	for i := 0; i < len(lines); i++ {
 		fmt.Println(lines[i])
 	}
 
-	// fmt.Printf("Part one solution: %v\n", digitCalibrationValues(lines))
+	fmt.Printf("Part one solution: %v\n", digitCalibrationValues(lines))
 
 	fmt.Printf("Part two solution: %v\n", allCalibrationValues(lines))
 }
@@ -89,7 +87,6 @@ func digitCalibrationValues(lines []string) int {
 
 		sum += num
 	}
-
 	return sum
 }
 
