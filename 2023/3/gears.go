@@ -64,7 +64,7 @@ func grabGears(schematics []schematic, lastIndex int) []int {
 					}
 				}
 			}
-			if i != 0 {
+			if i != lastIndex {
 				nums = neighboringNums(index, lastIndex, schematics[i+1].numberIndexes)
 				if nums[0] >= 0 {
 					num, _ := strconv.Atoi(schematics[i+1].numbers[nums[0]])
@@ -83,10 +83,10 @@ func grabGears(schematics []schematic, lastIndex int) []int {
 	return gears
 }
 
-// neighboringNums takes a line's start and end values for each num
+// neighboringNums takes a line's nums' start and end values
 // (as an array of arrays) as well as the index of a gear symbol and
-// the final index of the line, search area, then returns up to two
-// indexes of neighboring numbers as an array
+// the final index of the line. It searches the for nearby numbers,
+// then returns up to two found numbers (as indexes) in an array
 func neighboringNums(index int, lastIndex int, numberIndexes [][]int) [2]int {
 	start := index - 1
 	end := index + 1
