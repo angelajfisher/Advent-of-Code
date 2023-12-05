@@ -9,15 +9,15 @@ import (
 )
 
 type schematic struct {
-	symbols []int
-	gearSymbols []int
+	symbols       []int
+	gearSymbols   []int
 	numberIndexes [][]int
-	numbers []string
+	numbers       []string
 }
 
 func main() {
 	lines, _ := readLines()
-	lastIndex := len(lines[0])-1
+	lastIndex := len(lines[0]) - 1
 
 	schematics := parseLines(lines)
 
@@ -119,7 +119,7 @@ func grabParts(schematics []schematic, lastIndex int) []int {
 			var end int
 
 			if current[j][0] > 0 {
-				start = current[j][0]-1
+				start = current[j][0] - 1
 			} else {
 				start = 0
 			}
@@ -129,7 +129,7 @@ func grabParts(schematics []schematic, lastIndex int) []int {
 				end = lastIndex
 			}
 
-			checkSchematics := [][]int{schematics[i].symbols,}
+			checkSchematics := [][]int{schematics[i].symbols}
 			if i != 0 {
 				checkSchematics = append(checkSchematics, schematics[i-1].symbols)
 			}

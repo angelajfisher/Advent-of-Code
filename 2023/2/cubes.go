@@ -107,7 +107,6 @@ func maxCubes(games []game) []set {
 	return maximums
 }
 
-
 // validateGames compares the sets in each game to the max possible
 // set and returns those that fit within the constraints
 func validateGames(games []game, maxSet set) []game {

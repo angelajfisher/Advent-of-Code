@@ -1,20 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"bufio"
-	"strconv"
-	"regexp"
-	"strings"
+	"fmt"
 	"math"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 type scratchcard struct {
-	id			int
-	winningNums	[]int
-	cardNums	[]int
-	copies		int
+	id          int
+	winningNums []int
+	cardNums    []int
+	copies      int
 }
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 // addCards increases the number of copies of matching scratchcards and
 // returns the updated array of scratchcards
 func addCards(startIndex int, numToAdd int, scratchcards []scratchcard) []scratchcard {
-	for i := startIndex+1; i <= startIndex + numToAdd; i++ {
+	for i := startIndex + 1; i <= startIndex+numToAdd; i++ {
 		scratchcards[i].copies += scratchcards[startIndex].copies
 	}
 	return scratchcards
