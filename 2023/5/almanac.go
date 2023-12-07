@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"sync"
 )
 
 type almanac struct {
@@ -43,25 +44,43 @@ func main() {
 		}
 	}
 	fmt.Printf("The answer to part one is: %v\n", location)
+
+	almanac = mapSeeds(seedRangeDataToAlmanac(lines))
+
+	location = almanac.seeds[0].location
+	for _, seedRef := range almanac.seeds {
+		seed := *seedRef
+		if location > seed.location {
+			location = seed.location
+		}
+	}
+	fmt.Printf("The answer to part two is: %v\n", location)
 }
 
 // mapSeeds takes in an almanac and populates the seeds within it
 // with their mapped values according to the almanac, then returns
 // the updated almanac
 func mapSeeds(almanac almanac) almanac {
+	var wg sync.WaitGroup
+	wg.Add(len(almanac.seeds))
 	for i, seedRef := range almanac.seeds {
-		seed := *seedRef
+		go func(i int) {
+			defer wg.Done()
+			seed := *seedRef
 
-		seed.soil = convertFromMap(seed.id, almanac.seedToSoilMap)
-		seed.fertilizer = convertFromMap(seed.soil, almanac.soilToFertilizerMap)
-		seed.water = convertFromMap(seed.fertilizer, almanac.fertilizerToWaterMap)
-		seed.light = convertFromMap(seed.water, almanac.waterToLightMap)
-		seed.temp = convertFromMap(seed.light, almanac.lightToTempMap)
-		seed.humidity = convertFromMap(seed.temp, almanac.tempToHumidityMap)
-		seed.location = convertFromMap(seed.humidity, almanac.humidityToLocationMap)
+			seed.soil = convertFromMap(seed.id, almanac.seedToSoilMap)
+			seed.fertilizer = convertFromMap(seed.soil, almanac.soilToFertilizerMap)
+			seed.water = convertFromMap(seed.fertilizer, almanac.fertilizerToWaterMap)
+			seed.light = convertFromMap(seed.water, almanac.waterToLightMap)
+			seed.temp = convertFromMap(seed.light, almanac.lightToTempMap)
+			seed.humidity = convertFromMap(seed.temp, almanac.tempToHumidityMap)
+			seed.location = convertFromMap(seed.humidity, almanac.humidityToLocationMap)
 
-		almanac.seeds[i] = &seed
+			almanac.seeds[i] = &seed
+			fmt.Printf("Seed ID %v fully mapped\n", seed.id)
+		}(i)
 	}
+	wg.Wait()
 	return almanac
 }
 
@@ -75,6 +94,47 @@ func convertFromMap(convertNum int, ranges [][]int) int {
 		}
 	}
 	return convertedNum
+}
+
+// dataToAlmanac takes a slice of lines (strings)
+// and parses them into an almanac struct, but this
+// time every other seed is not a seed, but a range
+// of seeds to be added to the almanac.
+// ...takes a very long time 😬
+func seedRangeDataToAlmanac(lines []string) almanac {
+	almanac := almanac{}
+	index := 0
+
+	seedLines, i := parseSection(lines)
+	index += i
+	almanac.seedToSoilMap, i = parseSection(lines[index:])
+	index += i
+	almanac.soilToFertilizerMap, i = parseSection(lines[index:])
+	index += i
+	almanac.fertilizerToWaterMap, i = parseSection(lines[index:])
+	index += i
+	almanac.waterToLightMap, i = parseSection(lines[index:])
+	index += i
+	almanac.lightToTempMap, i = parseSection(lines[index:])
+	index += i
+	almanac.tempToHumidityMap, i = parseSection(lines[index:])
+	index += i
+	almanac.humidityToLocationMap, _ = parseSection(lines[index:])
+
+	seedLine := seedLines[0]
+	var wg sync.WaitGroup
+	wg.Add(len(seedLine))
+	for i := 0; i < len(seedLine)-1; i += 2 {
+		go func(i int) {
+			defer wg.Done()
+			for j := 0; j < seedLine[i+1]; j++ {
+				almanac.seeds = append(almanac.seeds, &seed{id: seedLine[i]+j})
+			}
+			fmt.Printf("Line %v with range %v added to the almanac!\n", i, seedLine[i+1])
+		}(i)
+	}
+	wg.Wait()
+	return almanac
 }
 
 // dataToAlmanac takes a slice of lines (strings)
